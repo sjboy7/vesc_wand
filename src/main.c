@@ -17,10 +17,10 @@
 
 #define CONFIG_DEPRECATED_ZEPHYR_INT_TYPES
 
-#include <zephyr.h>
-#include <device.h>
-#include <drivers/gpio.h>
-#include <drivers/adc.h>
+#include <zephyr/kernel.h>
+#include <zephyr/device.h>
+#include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/adc.h>
 #include <nrfx.h>
 #include <nrf52840.h>
 //#include <nrf52.h>
@@ -28,11 +28,13 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <drivers/clock_control.h>
+#include <zephyr/drivers/clock_control.h>
 #include <hal/nrf_gpio.h>
-#include <drivers/flash.h>
-#include <fs/nvs.h>
-#include <storage/flash_map.h>
+#include <zephyr/drivers/flash.h>
+// #include <fs/nvs.h>
+#include <zephyr/fs/nvs.h>
+// #include <storage/flash_map.h>
+#include <zephyr/storage/flash_map.h>
 
 #include "nrf_esb.h"
 #include "crc.h"
@@ -42,6 +44,7 @@
 #include "fonts.h"
 #include "imu.h"
 #include "datatypes.h"
+
 
 #ifndef M_PI
     #define M_PI 3.14159265358979323846
@@ -404,7 +407,9 @@ void main(void) {
 	int rc = 0;
 
 	fs.offset = FLASH_AREA_OFFSET(storage);;
-	rc = flash_get_page_info_by_offs(device_get_binding(DT_CHOSEN_ZEPHYR_FLASH_CONTROLLER_LABEL), fs.offset, &info);
+	// rc = flash_get_page_info_by_offs(device_get_binding(DT_CHOSEN_ZEPHYR_FLASH_CONTROLLER_LABEL), fs.offset, &info);
+	rc = flash_get_page_info_by_offs(DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)), fs.offset, &info);
+
 	if (rc) {
 		printk("Unable to get page info");
 	}
@@ -412,7 +417,9 @@ void main(void) {
 	fs.sector_size = info.size;
 	fs.sector_count = 2;
 
-	rc = nvs_init(&fs, DT_CHOSEN_ZEPHYR_FLASH_CONTROLLER_LABEL);
+	// rc = nvs_init(&fs, DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)));
+	rc = nvs_mount(&fs);
+	
 	if (rc) {
 		printk("Flash Init failed\n");
 	}
@@ -975,7 +982,7 @@ void adc_sample_thd(void) {
 
 	adc_channel_setup(adc_dev, &channel_cfg);
 
-	static s16_t sample;
+	static int16_t sample;
 	struct adc_sequence seq;
 
 	seq.options = NULL;
