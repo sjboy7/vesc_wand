@@ -1,3 +1,8 @@
+Fork, updated to work with VS Code and latest NRF connect/zephyr
+
+
+------------------
+
 # VESC Wand Firmware
 
 This is the firmware for the [VESC Wand](https://www.trampaboards.com/wand-p-26992.html). It runs on the NRF52840 and uses the [Zephyr](https://www.zephyrproject.org/) OS. At the time of writing it uses Zephyr version 2.0.99; you can use [this](https://docs.zephyrproject.org/latest/getting_started/index.html) guide to Zephyr up and running. My colleague and friend Joel also made a tutorial on how to get Zephyr up and running.
