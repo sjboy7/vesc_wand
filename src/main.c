@@ -69,6 +69,11 @@
 #define ADC_CH_JS		1
 #define ADC_CH_BATT		9 // 9 is internal VDD
 
+#define NVS_PARTITION		storage_partition
+#define NVS_PARTITION_DEVICE	FIXED_PARTITION_DEVICE(NVS_PARTITION)
+#define NVS_PARTITION_OFFSET	FIXED_PARTITION_OFFSET(NVS_PARTITION)
+
+
 typedef struct {
 	volatile bool use_imperial_units;
 } conf_data;
@@ -406,10 +411,13 @@ void main(void) {
 	struct flash_pages_info info;
 	int rc = 0;
 
-	fs.offset = FLASH_AREA_OFFSET(storage);;
-	// rc = flash_get_page_info_by_offs(device_get_binding(DT_CHOSEN_ZEPHYR_FLASH_CONTROLLER_LABEL), fs.offset, &info);
-	rc = flash_get_page_info_by_offs(DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)), fs.offset, &info);
+	// fs.offset = FLASH_AREA_OFFSET(storage);;
+	fs.flash_device=NVS_PARTITION_DEVICE;
+	fs.offset = NVS_PARTITION_OFFSET;
 
+	// rc = flash_get_page_info_by_offs(device_get_binding(DT_CHOSEN_ZEPHYR_FLASH_CONTROLLER_LABEL), fs.offset, &info);
+	// rc = flash_get_page_info_by_offs(DEVICE_DT_GET(DT_CHOSEN(zephyr_flash_controller)), fs.offset, &info);
+	rc = flash_get_page_info_by_offs(fs.flash_device, fs.offset, &info);
 	if (rc) {
 		printk("Unable to get page info");
 	}
